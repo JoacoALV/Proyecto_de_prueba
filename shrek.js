@@ -1,54 +1,67 @@
 // Debo crear las clases para la creación de misiones
 
 class Mision{
-    constructor(nombredelmandatario, nombre, tipo, parametro) {
+    constructor(nombredelmandatario, tipo, parametro) {
     this._nombredelmandatario = nombredelmandatario;
-    this._nombre = nombre;
     this.tipo = tipo;
     this._parametro = parametro;
     }
+
+    Esdificil() {
+        return this.nombredelmandatario.charat(0) === "G"
+    }
+
+    Puntos() {
+        return 0;
+    }
 }
 
-//Defino la dificultad. Si empieza con "G", busco excepciones y si no las tiene es "True", pero si no empieza con "G" directamente es "False"
+//Clases de misiones
 
-Esdificil() {
-    if(this.nombredelmandatario.charat(0) === "G") {
-        if(
-            (this.tipo === "liberarprincesa" && this.parametro === 4) ||
-            (this.tipo === "liberarprincesa" && this.parametro === 5) ||
-            (this.tipo === "objetomagico" && this.parametro >= 100)
-        ) {
-            return true;
-        }
-    }
-    return false;
+class LiberarPrincesa extends Mision{
+EsDificil() {
+    return super.esDificil() && (this.detalle === 4 || this.detalle === 5);
+}
+puntos() {
+    return this.detalle * 2;
+}
 }
 
-// Los return no serían innecesarios? Yes
-// || (or)
-// Utilizar === verifica que los valores sean identicos y del mismo tipo de datos
-
-
-// Creo las misiones como variables, ya que tendrán el mismo nombre pero varia su composición (sus parametros)
-
-let mision1 = new Mision("Lord Farquaad", "Rescatar a Fiona", "liberarprincesa", "5")
-let mision2 = new Mision("Gandalf", "Encontrar la piedra folosofal", "objetomagico", "40")
-
-// Como hago una lista?
-
-// Calcular recompensa
-
-calcularpuntos() {
-    if(this._tipo === "liberarprincesa") {
-        return this._parametro * 2;
+class ObjetoMagico extends Mision{
+ esDificil() {
+        return super.esDificil() && this.detalle > 100;
     }
-    if(this._tipo === "objetomagico" && this._parametro < 50) {
-        return "10";
+ 
+ puntos() {
+        return this.detalle <= 50 ? 10 : 5;
     }
-    if(this._tipo === "objetomagico" && this._parametro > 50) {
-        return "5";
-    }
-    return "Revisa que te mandaste LA cagada"
 }
 
-// console.log porque no return
+// Creo una clase para hacer una lista donde sumar misiones. Buscando al sumar una a la lista entre las misiones predeterminadas. Creo un protegaonista.
+
+class Shrek {
+    constructor() {
+        this.misiones = [];
+    }
+ 
+    agregarMision(mision) {
+        this.misiones.push(mision);
+    }
+ 
+    misionesDificiles() {
+        return this.misiones.filter(mision => mision.esDificil());
+    }
+ 
+    totalPuntosRecompensa() {
+        return this.misionesDificiles().reduce((total, mision) => total + mision.puntos(), 0);
+    }
+}
+
+const shrek = new Shrek();
+shrek.agregarMision(new LiberarPrincesa("Gord Farquaad","LiberarPrincesa", 4));
+shrek.agregarMision(new ObjetoMagico("Gandalf","ObjetoMagico", 40));
+ 
+//Imprimo resultados.
+ 
+console.log("Misiones Dificiles:", shrek.misionesDificiles());
+console.log("Total de puntos de recompensa:", shrek.totalPuntosRecompensa());
